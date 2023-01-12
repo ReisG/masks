@@ -1,33 +1,37 @@
 #include <iostream>
 #include <string>
+#include <map>
+
 using namespace std;
 
 struct Log
 {
-	Log* data['z' - 'a' + 1];
+	map<char, Log*> data;
 	bool read;
 	Log()
 	{
-		for (int i = 0; i < 'z' - 'a' + 1; i++) data[i] = nullptr;
 		read = false;
 	}
 };
 
-void addLogBranch(Log* node, int idx)
+void addLogBranch(Log* node, char symb)
 {
-	if (node->data[idx] == nullptr) node->data[idx] = new Log();
+	if (node->data.find(symb) == node->data.end()) 
+		node->data[symb] = new Log();
 }
 
 struct Bor
 {
-	Bor* data['z' - 'a' + 1] = {nullptr};
-	int number = 0;
+	map<char, Bor*> data;
+	int number;
 	Bor()
 	{
-		for (int i = 0; i < 'z' - 'a' + 1; i++)
-		{
-			data[i] = nullptr;
-		}
+		number = 0;
+	}
+
+	bool exist(char symb)
+	{
+		return data.find(symb) != data.end();
 	}
 };
 
@@ -36,11 +40,11 @@ void add(Bor* root, string s)
 {
 	for (int i = 0; i < s.size(); i++)
 	{
-		if (root->data[s[i] - 'a'] == nullptr)
+		if (!root->exist(s[i]))
 		{
-			root->data[s[i] - 'a'] = new Bor();
+			root->data[s[i]] = new Bor();
 		}
-		root = root->data[s[i] - 'a'];
+		root = root->data[s[i]];
 	}
 	root->number++;
 }
@@ -72,23 +76,20 @@ void simple(Bor* node, const string &s, int inspIdx, string collected, Log* logN
 		return;
 	}
 
-	if (node->data[s[inspIdx] - 'a'] != nullptr)
+	if (node->exist(s[inspIdx]))
 	{
-		addLogBranch(logNow, s[inspIdx] - 'a');
-		simple(node->data[s[inspIdx] - 'a'], s, inspIdx + 1, collected + s[inspIdx], logNow->data[s[inspIdx] - 'a']);
+		addLogBranch(logNow, s[inspIdx]);
+		simple(node->data[s[inspIdx]], s, inspIdx + 1, collected + s[inspIdx], logNow->data[s[inspIdx]]);
 	}
 }
 
 
 void question(Bor* node, const string& s, int inspIdx, string collected, Log* logNow)
 {
-	for (int i = 0; i < 'z' - 'a' + 1; i++)
+	for (auto i : node->data)
 	{
-		if (node->data[i] != nullptr)
-		{
-			addLogBranch(logNow, i);
-			simple(node->data[i], s, inspIdx + 1, collected + (char)('a' + i), logNow->data[i]);
-		}
+		addLogBranch(logNow, i.first);
+		simple(node->data[i.first], s, inspIdx + 1, collected + i.first, logNow->data[i.first]);
 	}
 }
 
@@ -96,13 +97,10 @@ void star(Bor* node, const string& s, int inspIdx, string collected, Log* logNow
 {
 	simple(node, s, inspIdx+1, collected, logNow);
 	question(node, s, inspIdx, collected, logNow);
-	for (int i = 0; i < 'z' - 'a' + 1; i++)
+	for (auto i : node->data)
 	{
-		if (node->data[i] != nullptr)
-		{
-			addLogBranch(logNow, i);
-			star(node->data[i], s, inspIdx, collected + (char)('a' + i), logNow->data[i]);
-		}
+		addLogBranch(logNow, i.first);
+		star(node->data[i.first], s, inspIdx, collected + i.first, logNow->data[i.first]);
 	}
 }
 
@@ -124,7 +122,7 @@ int main()
 	{
 		cin >> user;
 		simple(root, user);
-		cout << endl;
+		cout << endl << endl;
 	}
 
 }
