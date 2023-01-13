@@ -104,6 +104,18 @@ void star(Bor* node, const string& s, int inspIdx, string collected, Log* logNow
 	}
 }
 
+
+string makeMaskSimplier(string mask)
+{
+	string res = "";
+	if (mask.size() != 0) res += mask[0];
+	for (int i = 1; i < mask.size(); i++)
+	{
+		if (mask[i - 1] != '*') res += mask[i];
+	}
+	return res;
+}
+
 int main()
 {
 	int n;
@@ -117,11 +129,11 @@ int main()
 		add(root, user);
 	}
 
-	cout << endl << "Masks" << endl;
+	cout << endl << "Enter masks" << endl;
 	while (true)
 	{
 		cin >> user;
-		simple(root, user);
+		simple(root, makeMaskSimplier(user));
 		cout << endl << endl;
 	}
 
