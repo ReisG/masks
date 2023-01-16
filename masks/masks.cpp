@@ -111,7 +111,7 @@ string makeMaskSimplier(string mask)
 	if (mask.size() != 0) res += mask[0];
 	for (int i = 1; i < mask.size(); i++)
 	{
-		if (mask[i - 1] != '*') res += mask[i];
+		if (mask[i - 1] != '*' || mask[i] != '*') res += mask[i];
 	}
 	return res;
 }
